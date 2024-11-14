@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+mkdir -p application
+if [ ! -f curr ]
+then
+  echo > curr
+fi
+
+dl_link="https://downloads.remarkable.com/latest/windows"
+installer="remarkable-installer.exe"
+wine_path='Z:'$(dirname $(realpath $0) | tr '/' '\\')'\application'
+
+curr=$(cat curr | awk '{print $1}')
+
+ver=$(curl $dl_link 2>/dev/null | \
+  sed -e 's/.*reMarkable-//g' -e 's/-win.*//g')
+
+
+if [[ $curr == $ver ]]
+then
+  echo on latest version - $curr
+else
+  echo new-version
+  echo $ver $(date +"%Y-%m-%d") > curr
+  wget $dl_link -O $installer
+  wine $installer
+  wine_proc=$!
+  echo $wine_proc
+  wl-paste -t text -w xclip -selection clipboard &
+  wl-copy "$wine_path"
+
+  while pgrep wine 1>/dev/null
+  do
+    sleep 1
+  done
+  pkill wl-paste
+  pkill wl-copy
+fi
+

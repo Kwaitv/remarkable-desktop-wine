@@ -1,0 +1,9 @@
+# Remarkable through wine for wayland
+
+packages required
+- xclip
+- wine
+- wl-copy / wl-paste
+
+`./update`: will pull the latest desktop installer and copy the wine path to
+`application` folder allowing allowing for easy install
